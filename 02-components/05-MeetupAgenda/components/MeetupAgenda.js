@@ -4,15 +4,15 @@ import MeetupAgendaItem from './MeetupAgendaItem.js';
 export default defineComponent({
   name: 'MeetupAgenda',
 
+  components: {
+    MeetupAgendaItem,
+  },
+
   props: {
     agenda: {
       type: Array,
-      required: true
-    }
-  },
-
-  components: {
-    MeetupAgendaItem
+      required: true,
+    },
   },
 
   template: `

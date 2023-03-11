@@ -7,15 +7,15 @@ export default defineComponent({
   props: {
     agendaItem: {
       type: Object,
-      required: true
-    } 
+      required: true,
+    },
   },
-  
+
   data() {
     return {
       agendaItemIcons,
       agendaItemDefaultTitles,
-    }
+    };
   },
 
   template: `
