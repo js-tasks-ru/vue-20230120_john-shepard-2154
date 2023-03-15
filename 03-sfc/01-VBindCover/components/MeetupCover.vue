@@ -15,14 +15,14 @@ export default {
 
     image: {
       type: String,
-    }
+    },
   },
 
   computed: {
-      cssImageUrlAttribute() {
-        return this.image ? `url('${this.image}')` : 'var(--default-cover)'
-      }
-    }
+    cssImageUrlAttribute() {
+      return this.image ? `url('${this.image}')` : 'var(--default-cover)';
+    },
+  },
 };
 </script>
 
