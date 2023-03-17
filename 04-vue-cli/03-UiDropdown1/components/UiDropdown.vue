@@ -26,6 +26,12 @@
         {{ option.text }}
       </button>
     </div>
+
+    <select id="select-options" name="options" :value="modelValue" @change="selectOption($event.target)">
+      <option v-for="option in options" :key="option.value" :value="option.value" @change="selectOption(option)">
+        {{ option.text }}
+      </option>
+    </select>
   </div>
 </template>
 
