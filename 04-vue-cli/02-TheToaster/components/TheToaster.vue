@@ -6,12 +6,9 @@
 
 <script>
 import ToasterItem from './ToasterItem.vue';
-
 export default {
   name: 'TheToaster',
-
   components: { ToasterItem },
-
   data() {
     return {
       lastToastId: -1,
@@ -19,16 +16,13 @@ export default {
       toastStack: [],
     };
   },
-
   methods: {
     success(message) {
       this.addToast(message, 'success');
     },
-
     error(message) {
       this.addToast(message, 'error');
     },
-
     addToast(message, toastType) {
       let newToast = {
         id: --this.lastToastId,
@@ -36,12 +30,9 @@ export default {
         timeLife: this.timeToClose,
         type: toastType,
       };
-
       this.toastStack.push(newToast);
-
       setTimeout(this.removeToast, this.timeToClose, newToast.id);
     },
-
     removeToast(toastId) {
       try {
         let toastToRemove = this.toastStack.findIndex((element) => element.id === toastId);
@@ -50,7 +41,6 @@ export default {
         //
       }
     },
-
     // handleCloseClick(toast) {
     //   this.removeToast(toast.id)
     // }
@@ -69,7 +59,6 @@ export default {
   white-space: pre-wrap;
   z-index: 999;
 }
-
 @media all and (min-width: 992px) {
   .toasts {
     bottom: 72px;

@@ -16,14 +16,11 @@
 
 <script>
 import UiIcon from './UiIcon.vue';
-
 export default {
   name: 'ToasterItem',
-
   components: {
     UiIcon,
   },
-
   props: {
     toastType: {
       type: String,
@@ -47,19 +44,15 @@ export default {
   line-height: 28px;
   width: auto;
 }
-
 .toast + .toast {
   margin-top: 20px;
 }
-
 .toast__icon {
   margin-right: 12px;
 }
-
 .toast.toast_success {
   color: var(--green);
 }
-
 .toast.toast_error {
   color: var(--red);
 }
