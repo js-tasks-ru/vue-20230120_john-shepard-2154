@@ -2,20 +2,34 @@
   <div class="calendar-view">
     <div class="calendar-view__controls">
       <div class="calendar-view__controls-inner">
-        <button class="calendar-view__control-left" type="button" aria-label="Previous month"
-          @click="previousMonth"></button>
+        <button
+          class="calendar-view__control-left"
+          type="button"
+          aria-label="Previous month"
+          @click="previousMonth"
+        ></button>
         <div class="calendar-view__date">{{ currentMonthYear }}</div>
         <button class="calendar-view__control-right" type="button" aria-label="Next month" @click="nextMonth"></button>
       </div>
     </div>
 
     <div class="calendar-view__grid">
-      <div v-for="day in days" :key="day.day" class="calendar-view__cell"
-        :class="{ 'calendar-view__cell_inactive': !day.active }" tabindex="0">
+      <div
+        v-for="day in days"
+        :key="day.day"
+        class="calendar-view__cell"
+        :class="{ 'calendar-view__cell_inactive': !day.active }"
+        tabindex="0"
+      >
         <div class="calendar-view__cell-day">{{ day.title }}</div>
         <div class="calendar-view__cell-content">
-          <a href="#" class="calendar-event" v-for="meetup in meetupsToDaysMatching[day.formatDate]"
-            :key="meetup.title">{{ meetup.title }}</a>
+          <a
+            v-for="meetup in meetupsToDaysMatching[day.formatDate]"
+            :key="meetup.title"
+            href="#"
+            class="calendar-event"
+            >{{ meetup.title }}</a
+          >
         </div>
       </div>
     </div>
@@ -136,11 +150,10 @@ export default {
       let lastDayIndexInNextMonth = new Date(year, monthNumber + 1, 0).getDate();
 
       if (lastDayIndexInNextMonth > this.date.getDate()) {
-        this.date = new Date(this.date.setMonth(monthNumber));        
-      }
-      else {
-        this.date.setDate(lastDayIndexInNextMonth)
-        this.date = new Date(this.date.setMonth(monthNumber))
+        this.date = new Date(this.date.setMonth(monthNumber));
+      } else {
+        this.date.setDate(lastDayIndexInNextMonth);
+        this.date = new Date(this.date.setMonth(monthNumber));
       }
     },
 
