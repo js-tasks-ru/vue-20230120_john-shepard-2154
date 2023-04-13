@@ -1,5 +1,5 @@
 <template>
-  <TheToaster ref="toaster" />
+  <ToasterItem ref="toaster" />
   <p>
     <button type="button" @click="handleSuccessClick">Add Success Message</button>
     <button type="button" @click="handleErrorClick">Add Error Message</button>
@@ -7,12 +7,12 @@
 </template>
 
 <script>
-import TheToaster from './components/TheToaster.vue';
+import ToasterItem from './components/ToasterItem.vue';
 
 export default {
   name: 'App',
 
-  components: { TheToaster },
+  components: { ToasterItem },
 
   methods: {
     handleSuccessClick() {
