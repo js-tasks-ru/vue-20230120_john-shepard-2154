@@ -13,9 +13,9 @@ export const router = createRouter({
       component: () => import('../views/PageB'),
     },
     {
-      path: '/:pathMatch(.*)*', 
-      name: 'NotFound', 
-      component: () => import('../views/PageNotFound') 
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('../views/PageNotFound'),
     },
   ],
 });
