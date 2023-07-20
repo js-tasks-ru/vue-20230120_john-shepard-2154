@@ -37,7 +37,7 @@ export default {
       if (this.tag === 'button') {
         if (!this.$attrs.type) return 'button';
         else return this.$attrs.type;
-      } else return null
+      } else return null;
     },
   },
 };
