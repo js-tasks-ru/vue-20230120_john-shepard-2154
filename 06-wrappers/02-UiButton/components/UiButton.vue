@@ -1,10 +1,45 @@
 <template>
-  <button class="button button_secondary button_block">BUTTON</button>
+  <component :is="tag" class="button" :class="[{ button_block: block }, colorClass]" :type="buttonTypeProxyValue"
+    ><slot
+  /></component>
 </template>
 
 <script>
 export default {
   name: 'UiButton',
+
+  props: {
+    tag: {
+      default: 'button',
+    },
+
+    variant: {
+      type: String,
+      default: 'secondary',
+      validator(value) {
+        return ['primary', 'secondary', 'danger'].includes(value);
+      },
+    },
+
+    block: {
+      type: Boolean,
+    },
+  },
+
+  computed: {
+    colorClass() {
+      let obj = {};
+      obj['button_' + this.variant] = this.variant;
+      return obj;
+    },
+
+    buttonTypeProxyValue() {
+      if (this.tag === 'button') {
+        if (!this.$attrs.type) return 'button';
+        else return this.$attrs.type;
+      } else return null
+    },
+  },
 };
 </script>
 
