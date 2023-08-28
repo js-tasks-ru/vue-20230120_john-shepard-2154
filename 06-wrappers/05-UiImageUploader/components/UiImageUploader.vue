@@ -1,8 +1,20 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+    <label
+      class="image-uploader__preview"
+      :class="{ 'image-uploader__preview-loading': currentState == 'isLoading' ? true : false }"
+      :style="imageUrl && { '--bg-url': `url(${imageUrl})` }"
+    >
+      <span class="image-uploader__text">{{ currentStateDescription }}</span>
+      <input
+      ref="imgInput"
+        type="file"
+        accept="image/*"
+        class="image-uploader__input"
+        v-bind="$attrs"
+        @click.capture="clickHandler"
+        @change="getFile"
+      />
     </label>
   </div>
 </template>
@@ -10,12 +22,106 @@
 <script>
 export default {
   name: 'UiImageUploader',
+
+  inheritAttrs: false,
+
+  props: {
+    preview: {
+      type: String,
+      required: false,
+    },
+
+    uploader: {
+      type: Function,
+      required: false,
+    },
+  },
+
+  emits: ['select', 'upload', 'error', 'remove'],
+  
+  data() {
+    return {
+      previewProxy: null,
+      selectedFileUrl: null,
+      isFileUploaded: false,
+    };
+  },
+
+  computed: {
+    currentState() {
+      if (!this.imageUrl) return 'empty';
+      if (this.imageUrl && !this.isFileUploaded) return 'isLoading';
+      if (this.previewProxy || this.isFileUploaded) return 'filledIn';
+      return null;
+    },
+
+    currentStateDescription() {
+      if (this.currentState === 'empty') return 'Загрузить изображение';
+      if (this.currentState === 'isLoading') return 'Загрузка...';
+      if (this.currentState === 'filledIn') return 'Удалить изображение';
+      return null;
+    },
+
+    imageUrl() {
+      if (this.previewProxy) return this.previewProxy;
+      if (this.selectedFileUrl) return this.selectedFileUrl;
+      return null;
+    },
+  },
+
+  created() {
+    if (this.preview) {
+      this.previewProxy = this.preview;
+      this.isFileUploaded = true;
+    }
+  },
+
+  methods: {
+    clickHandler(event) {
+      if (this.currentState == 'isLoading') {
+        event.preventDefault();
+        return;
+      }
+      if (this.previewProxy || this.selectedFileUrl) this.removeImage(event);
+    },
+
+    removeImage(event) {
+      this.refreshState();
+      this.previewProxy = null;
+      this.$emit('remove');
+      event.preventDefault();
+    },
+
+    async getFile(event) {
+      let selectedFile = event.target.files[0];
+      this.selectedFileUrl = URL.createObjectURL(selectedFile);
+      this.$emit('select', selectedFile);
+
+      if (this.uploader) {
+        await this.uploader(selectedFile)
+          .then((response) => {
+            this.$emit('upload', response);
+            this.isFileUploaded = true;
+          })
+          .catch((error) => {
+            this.$emit('error', error);
+            this.refreshState();
+          });
+      } else this.isFileUploaded = true;
+    },
+
+    refreshState() {
+      this.selectedFileUrl = null;
+      this.isFileUploaded = null;
+      this.previewProxy = this.preview;
+      this.$refs.imgInput.value = null;
+    },
+  },
 };
 </script>
 
 <style scoped>
-.image-uploader {
-}
+/* .image-uploader {} */
 
 .image-uploader__input {
   opacity: 0;
