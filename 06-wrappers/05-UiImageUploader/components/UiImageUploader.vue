@@ -2,7 +2,7 @@
   <div class="image-uploader">
     <label
       class="image-uploader__preview"
-      :class="{ 'image-uploader__preview-loading': currentState == 'isLoading' ? true : false }"
+      :class="{ 'image-uploader__preview-loading': currentState == 'isLoading' }"
       :style="imageUrl && { '--bg-url': `url(${imageUrl})` }"
     >
       <span class="image-uploader__text">{{ currentStateDescription }}</span>

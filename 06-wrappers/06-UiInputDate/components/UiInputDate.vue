@@ -1,10 +1,10 @@
 <template>
   <UiInput v-model="modelValueProxy" :type="type">
-    <template v-if="$slots['left-icon'] ? true : false" #left-icon>
+    <template v-if="$slots['left-icon']" #left-icon>
       <slot name="left-icon" />
     </template>
 
-    <template v-if="$slots['right-icon'] ? true : false" #right-icon>
+    <template v-if="$slots['right-icon']" #right-icon>
       <slot name="right-icon" />
     </template>
   </UiInput>
