@@ -7,7 +7,7 @@
     >
       <span class="image-uploader__text">{{ currentStateDescription }}</span>
       <input
-      ref="imgInput"
+        ref="imgInput"
         type="file"
         accept="image/*"
         class="image-uploader__input"
@@ -38,7 +38,7 @@ export default {
   },
 
   emits: ['select', 'upload', 'error', 'remove'],
-  
+
   data() {
     return {
       previewProxy: null,
