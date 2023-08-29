@@ -17,7 +17,7 @@ export default {
   name: 'UiInputDate',
 
   components: { UiInput },
-
+  
   props: {
     type: {
       type: String,
