@@ -1,11 +1,7 @@
 <template>
-  <UiInput v-model="modelValueProxy" :type="type">
-    <template v-if="$slots['left-icon']" #left-icon>
-      <slot name="left-icon" />
-    </template>
-
-    <template v-if="$slots['right-icon']" #right-icon>
-      <slot name="right-icon" />
+  <UiInput :modelValue="formattedDate" :type="type" @input="$emit('update:modelValue', $event.target.valueAsNumber)">
+    <template v-for="slotName in Object.keys($slots)" #[slotName]>
+      <slot :name="slotName" />
     </template>
   </UiInput>
 </template>
@@ -17,13 +13,15 @@ export default {
   name: 'UiInputDate',
 
   components: { UiInput },
-  
+
   props: {
     type: {
       type: String,
       default: 'date',
       validator(value) {
-        return ['date', 'time', 'datetime-local'].includes(value);
+        let isValid = ['date', 'time', 'datetime-local'].includes(value);
+        if (isValid) return true;
+        throw new Error("Invalid prop 'type'");
       },
     },
     modelValue: {
@@ -34,64 +32,14 @@ export default {
   emits: ['update:modelValue'],
 
   computed: {
-    modelValueProxy: {
-      get() {
-        if (!this.modelValue) return null;
+    formattedDate() {
+      if (!this.modelValue) return null;
 
-        if (this.type == 'date') {
-          let date = new Date(this.modelValue);
-
-          let year = date.getFullYear();
-          let month = (date.getMonth() + 1).toString().length == 1 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
-          let day = date.getDate().toString().length == 1 ? '0' + date.getDate() : date.getDate();
-
-          return `${year}-${month}-${day}`;
-        } else if (this.type == 'datetime-local') {
-          let date = new Date(this.modelValue);
-          return date
-            .toISOString(navigator.language, {
-              year: 'numeric',
-              month: 'numeric',
-              day: 'numeric',
-              hour: 'numeric',
-              minutes: 'numeric',
-            })
-            .slice(0, -8);
-        } else if (this.type == 'time') {
-          let date = new Date(this.modelValue);
-
-          let hours = date.getUTCHours().toString().length == 1 ? '0' + date.getUTCHours() : date.getUTCHours();
-          let minutes = date.getUTCMinutes().toString().length == 1 ? '0' + date.getUTCMinutes() : date.getUTCMinutes();
-
-          return `${hours}:${minutes}`;
-        }
-
-        return null;
-      },
-
-      set(value) {
-        let resultValue = null;
-
-        if (value) {
-          if (this.type == 'date') {
-            let date = new Date(value);
-            resultValue = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-          } else if (this.type == 'datetime-local') {
-            let date = new Date(value);
-            resultValue = Date.UTC(
-              date.getUTCFullYear(),
-              date.getUTCMonth(),
-              date.getUTCDate(),
-              date.getHours(),
-              date.getMinutes(),
-            );
-          } else if (this.type == 'time') {
-            resultValue = Date.UTC(1970, 0, 1, value.split(':')[0], value.split(':')[1]);
-          }
-        }
-
-        this.$emit('update:modelValue', resultValue);
-      },
+      let date = new Date(this.modelValue).toISOString();
+      if (this.type == 'date') return date.slice(0, 10);
+      else if (this.type == 'datetime-local') return date.slice(0, -8);
+      else if (this.type == 'time') return date.slice(11, 16);
+      else return undefined;
     },
   },
 };
