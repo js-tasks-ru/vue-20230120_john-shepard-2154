@@ -1,37 +1,42 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="remove">
       <UiIcon icon="trash" />
     </button>
 
     <UiFormGroup>
-      <UiDropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <UiDropdown v-model="localAgendaItem.type" title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
     </UiFormGroup>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <UiFormGroup label="Начало">
-          <UiInput type="time" placeholder="00:00" name="startsAt" />
+          <UiInput v-model="localAgendaItem.startsAt" type="time" placeholder="00:00" name="startsAt" />
         </UiFormGroup>
       </div>
       <div class="agenda-item-form__col">
         <UiFormGroup label="Окончание">
-          <UiInput type="time" placeholder="00:00" name="endsAt" />
+          <UiInput v-model="localAgendaItem.endsAt" type="time" placeholder="00:00" name="endsAt" />
         </UiFormGroup>
       </div>
     </div>
 
-    <UiFormGroup label="Тема">
-      <UiInput name="title" />
+    <UiFormGroup :label="$options.agendaItemTitleNaming[localAgendaItem.type]">
+      <UiInput v-model="localAgendaItem.title" name="title" />
     </UiFormGroup>
-    <UiFormGroup label="Докладчик">
-      <UiInput name="speaker" />
+    <UiFormGroup v-if="localAgendaItem.type == 'talk'" label="Докладчик">
+      <UiInput v-model="localAgendaItem.speaker" name="speaker" />
     </UiFormGroup>
-    <UiFormGroup label="Описание">
-      <UiInput multiline name="description" />
+    <UiFormGroup v-if="localAgendaItem.type == 'talk' || localAgendaItem.type == 'other'" label="Описание">
+      <UiInput v-model="localAgendaItem.description" multiline name="description" />
     </UiFormGroup>
-    <UiFormGroup label="Язык">
-      <UiDropdown title="Язык" :options="$options.talkLanguageOptions" name="language" />
+    <UiFormGroup v-if="localAgendaItem.type == 'talk'" label="Язык">
+      <UiDropdown
+        v-model="localAgendaItem.language"
+        title="Язык"
+        :options="$options.talkLanguageOptions"
+        name="language"
+      />
     </UiFormGroup>
   </fieldset>
 </template>
@@ -70,6 +75,18 @@ const agendaItemTypeOptions = Object.entries(agendaItemDefaultTitles).map(([type
   icon: agendaItemTypeIcons[type],
 }));
 
+const nonstandardText = 'Нестандартный текст (необязательно)';
+const agendaItemTitleNaming = {
+  registration: nonstandardText,
+  opening: nonstandardText,
+  break: nonstandardText,
+  coffee: nonstandardText,
+  closing: nonstandardText,
+  afterparty: nonstandardText,
+  talk: 'Тема',
+  other: 'Заголовок',
+};
+
 const talkLanguageOptions = [
   { value: null, text: 'Не указано' },
   { value: 'RU', text: 'RU' },
@@ -80,6 +97,7 @@ export default {
   name: 'MeetupAgendaItemForm',
 
   agendaItemTypeOptions,
+  agendaItemTitleNaming,
   talkLanguageOptions,
 
   components: { UiIcon, UiFormGroup, UiInput, UiDropdown },
@@ -88,6 +106,50 @@ export default {
     agendaItem: {
       type: Object,
       required: true,
+    },
+  },
+
+  emits: ['update:agendaItem', 'remove'],
+
+  data() {
+    return {
+      localAgendaItem: { ...this.agendaItem },
+    };
+  },
+
+  watch: {
+    localAgendaItem: {
+      deep: true,
+      handler(newValue, oldValue) {
+        this.$emit('update:agendaItem', { ...newValue });
+      },
+    },
+
+    'localAgendaItem.startsAt': {
+      handler(newValue, oldValue) {
+        if (newValue != oldValue) {
+          let updatedTime = new Date(0, 0, 0, newValue.split(':')[0], newValue.split(':')[1]);
+          let oldTime = new Date(0, 0, 0, oldValue.split(':')[0], oldValue.split(':')[1]);
+
+          let msDiffer = updatedTime.getTime() - oldTime.getTime();
+
+          let localEndsAt = new Date(
+            0,
+            0,
+            0,
+            this.localAgendaItem.endsAt.split(':')[0],
+            this.localAgendaItem.endsAt.split(':')[1],
+          );
+          localEndsAt = localEndsAt.getTime() + msDiffer;
+          this.localAgendaItem.endsAt = new Date(localEndsAt).toString().slice(16, 21);
+        }
+      },
+    },
+  },
+
+  methods: {
+    remove() {
+      this.$emit('remove');
     },
   },
 };
