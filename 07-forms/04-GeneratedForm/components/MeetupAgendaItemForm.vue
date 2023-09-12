@@ -1,6 +1,6 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="remove">
       <UiIcon icon="trash" />
     </button>
 
@@ -21,8 +21,16 @@
       </div>
     </div>
 
-    <UiFormGroup :label="field.label" v-for="field in Object.keys(agendaItemFormSchemas[agendaItem.type])">
-      <component :is="field.component" v-bind="field.props"></component>
+    <UiFormGroup
+      v-for="field in Object.keys($options.agendaItemFormSchemas[localAgendaItem.type])"
+      :key="field"
+      :label="$options.agendaItemFormSchemas[localAgendaItem.type][field].label"
+    >
+      <component
+        :is="$options.agendaItemFormSchemas[localAgendaItem.type][field].component"
+        v-model="localAgendaItem[field]"
+        v-bind="$options.agendaItemFormSchemas[localAgendaItem.type][field].props"
+      ></component>
     </UiFormGroup>
   </fieldset>
 </template>
@@ -60,7 +68,6 @@ const agendaItemTypeOptions = Object.entries(agendaItemDefaultTitles).map(([type
   text: title,
   icon: agendaItemTypeIcons[type],
 }));
-
 
 const talkLanguageOptions = [
   { value: null, text: 'Не указано' },
@@ -164,10 +171,12 @@ export default {
     },
   },
 
+  emits: ['remove', 'update:agendaItem'],
+
   data() {
     return {
       localAgendaItem: { ...this.agendaItem },
-    }
+    };
   },
 
   watch: {
@@ -238,7 +247,7 @@ export default {
   flex-direction: column;
 }
 
-.agenda-item-form__col+.agenda-item-form__col {
+.agenda-item-form__col + .agenda-item-form__col {
   margin-top: 16px;
 }
 
@@ -267,7 +276,7 @@ export default {
     padding: 0 12px;
   }
 
-  .agenda-item-form__col+.agenda-item-form__col {
+  .agenda-item-form__col + .agenda-item-form__col {
     margin-top: 0;
   }
 
