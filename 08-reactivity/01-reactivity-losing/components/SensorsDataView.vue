@@ -8,6 +8,7 @@
 <script>
 import { SensorsDataController } from '../services/SensorsDataController';
 import { SensorsDataStreamingService } from '../services/SensorsDataStreamingService';
+import lodashCloneDeep from 'lodash/cloneDeep';
 import SensorsDataRow from './SensorsDataRow';
 
 export default {
@@ -42,7 +43,7 @@ export default {
     },
 
     setData(sensors) {
-      this.sensors = sensors;
+      this.sensors = lodashCloneDeep(sensors);
     },
   },
 };
