@@ -1,7 +1,7 @@
 <script>
-// import { compile } from 'vue';
+import { compile, defineComponent, getCurrentInstance } from 'vue';
 
-export default {
+export default defineComponent({
   name: 'TemplateRenderer',
 
   props: {
@@ -20,5 +20,13 @@ export default {
       default: () => [],
     },
   },
-};
+
+  render(...args) {
+    const instance = getCurrentInstance();
+    instance.components = this.$props.components;
+
+    const renderFunction = compile(this.$props.template);
+    return renderFunction.apply(this, args);
+  },
+});
 </script>
