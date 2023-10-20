@@ -1,43 +1,5 @@
-<template>
-  <div class="panes">
-    <!--  Pane 0 -->
-    <div class="pane">
-      <div class="pane__content">
-        <!-- Определяем, какой именно слот рендерить по массиву порядка панелей -->
-        <slot :name="`pane-${panes[0]}`" />
-      </div>
-      <div class="pane__controls">
-        <!-- Скрываем кнопку классом pane__disabled-button -->
-        <UiButton class="pane__disabled-button" variant="secondary" block @click="up(0)"> Up </UiButton>
-        <UiButton variant="danger" block @click="down(0)"> Down </UiButton>
-      </div>
-    </div>
-    <!--  Pane 1 -->
-    <div class="pane">
-      <div class="pane__content">
-        <slot :name="`pane-${panes[1]}`" />
-      </div>
-      <div class="pane__controls">
-        <UiButton variant="secondary" block @click="up(1)"> Up </UiButton>
-        <UiButton variant="danger" block @click="down(1)"> Down </UiButton>
-      </div>
-    </div>
-    <!--  Pane 2 -->
-    <div class="pane">
-      <div class="pane__content">
-        <slot :name="`pane-${panes[2]}`" />
-      </div>
-      <div class="pane__controls">
-        <UiButton variant="secondary" block @click="up(2)"> Up </UiButton>
-        <UiButton class="pane__disabled-button" variant="danger" block @click="down(2)"> Down </UiButton>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script lang="jsx">
-// Предлагается решать задачу с использованием JSX, но вы можете использовать и чистые рендер-функции
-
+import { h } from 'vue';
 import UiButton from './UiButton.vue';
 
 export default {
@@ -54,8 +16,7 @@ export default {
        * [0, 1, 2]
        * @type {number[]|null}
        */
-      panes: [0, 1, 2],
-      // Сейчас здесь массив ровно из трёх элементов, но решение должно быть универсальным для любого количества узлов
+      panes: [],
     };
   },
 
@@ -81,6 +42,51 @@ export default {
       this.panes[i] = this.panes[i + 1];
       this.panes[i + 1] = temp;
     },
+  },
+
+  render() {
+    let countVNodes = this.$slots.default().length;
+    let panesContent = [];
+    let buttonsClass;
+
+    if (!this.panes.length) {
+      for (let index = 0; index < countVNodes; index++) this.panes.push(index);
+    }
+
+    let createPane = (toRenderVNodeIndex, toSwapVNodeIndex, isUpButtonDisabled, isDownButtonDisabled) => {
+      buttonsClass = ['', ''];
+      if (isUpButtonDisabled) buttonsClass[0] = 'pane__disabled-button';
+      if (isDownButtonDisabled) buttonsClass[1] = 'pane__disabled-button';
+
+      return (
+        <div class="pane">
+          <div class="pane__content">{this.$slots.default()[toRenderVNodeIndex]}</div>
+          <div class="pane__controls">
+            <UiButton class={buttonsClass[0]} variant="secondary" block onClick={() => this.up(toSwapVNodeIndex)}>
+              {' '}
+              Up{' '}
+            </UiButton>
+            <UiButton class={buttonsClass[1]} variant="danger" block onClick={() => this.down(toSwapVNodeIndex)}>
+              {' '}
+              Down{' '}
+            </UiButton>
+          </div>
+        </div>
+      );
+    };
+
+    for (let index = 0; index < countVNodes; index++) {
+      let isUpButtonDisabled = false;
+      let isDownButtonDisabled = false;
+
+      if (index === 0) isUpButtonDisabled = true;
+      if (index === countVNodes - 1) isDownButtonDisabled = true;
+
+      let vNode = createPane(this.panes[index], index, isUpButtonDisabled, isDownButtonDisabled);
+      panesContent.push(vNode);
+    }
+
+    return <div class="panes"> {panesContent} </div>;
   },
 };
 </script>

@@ -19,16 +19,38 @@ export default {
   },
 
   render() {
+    let uiTabs = this.$slots.default().map((vNode) => {
+      if (vNode.type.name === 'UiTab') return vNode;
+    });
+
+    let renderTabs = (uiTabs) => {
+      let tabs = [];
+      for (let index = 0; index < uiTabs.length; index++) {
+        tabs.push(
+          <a
+            class={uiTabs[index].props.name === this.active ? 'tabs__tab tabs__tab_active' : 'tabs__tab'}
+            role="tab"
+            onClick={() => this.setActive(uiTabs[index].props.name)}
+          >
+            {uiTabs[index].props.title}
+          </a>,
+        );
+      }
+      return tabs;
+    };
+
+    let renderContent = (uiTabs) => {
+      for (let index = 0; index < uiTabs.length; index++) {
+        if (uiTabs[index].props.name === this.active) return uiTabs[index].children.default();
+      }
+    };
+
     return (
       <div class="tabs">
         <div class="tabs__nav" role="tablist">
-          <a class="tabs__tab" role="tab">Tab</a>
-          <a class="tabs__tab tabs__tab_active" role="tab">Active Tab</a>
-          <a class="tabs__tab" role="tab">Tab</a>
+          {renderTabs(uiTabs)}
         </div>
-        <div class="tabs__content">
-          ACTIVE TAB CONTENT
-        </div>
+        <div class="tabs__content">{renderContent(uiTabs)}</div>
       </div>
     );
   },
