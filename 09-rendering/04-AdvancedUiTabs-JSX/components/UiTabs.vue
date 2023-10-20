@@ -63,7 +63,8 @@ export default {
   margin: 0;
 }
 
-.tabs__content {}
+.tabs__content {
+}
 
 .tabs__nav {
   display: flex;

@@ -1,6 +1,8 @@
 <template>
   <div class="pagination-container">
-    <!-- Контент страницы -->
+    <template v-for="item in itemsOnPage">
+      <slot :item="item"></slot>
+    </template>
   </div>
 </template>
 
@@ -24,6 +26,13 @@ export default {
     items: {
       type: Array,
       required: true,
+    },
+  },
+
+  computed: {
+    itemsOnPage() {
+      let itemsToSkip = (this.page - 1) * this.perPage;
+      return this.items.slice(itemsToSkip, itemsToSkip + this.perPage);
     },
   },
 };
